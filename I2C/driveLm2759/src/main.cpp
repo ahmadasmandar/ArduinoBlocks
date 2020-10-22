@@ -37,7 +37,7 @@ void loop()
 
   Wire.beginTransmission(ADRRES_WRITE);
   Wire.write(Torch_Current_Register);
-  Wire.write(0x0c);
+  Wire.write(0x05);
   error = Wire.endTransmission();
 
   delay(2000);
