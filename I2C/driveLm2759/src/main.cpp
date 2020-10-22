@@ -11,6 +11,7 @@ I2C Scanner for Arfuino
 #define Flash_Current_Register 0xB0
 #define Torch_Current_Register 0xA0
 #define Flash_Timeout_Duration_Register 0xC0
+float value;
 
 void setup()
 {
@@ -26,33 +27,58 @@ void loop()
 {
   byte error;
 
-  Serial.println("Scanning...");
-  // The i2c_scanner uses the return value of
-  // the Write.endTransmisstion to see if
-  // a device did acknowledge to the address.
-  Wire.beginTransmission(ADRRES_WRITE);
-  Wire.write(General_Purpose_Register);
-  Wire.write(0b0001);
-  error = Wire.endTransmission();
-
-  Wire.beginTransmission(ADRRES_WRITE);
-  Wire.write(Torch_Current_Register);
-  Wire.write(0x05);
-  error = Wire.endTransmission();
-
-  delay(2000);
-  Wire.beginTransmission(ADRRES_WRITE);
-  Wire.write(General_Purpose_Register);
-  Wire.write(0b0000);
-  error = Wire.endTransmission();
-
-  if (error == 0)
+  while (Serial.available() > 0)
   {
-    Serial.println("Success");
+    // int inChar = Serial.read();
+    value = Serial.parseFloat();
+    // if (value != 0)
+    // {
+    //   Serial.print(" the current value in mA : ");
+    //   Serial.println(value);
+    // }
+
+    delay(10);
+    if (value != 0)
+    {
+
+      for (;;)
+      {
+        Serial.println("Scanning...");
+        // The i2c_scanner uses the return value of
+        // the Write.endTransmisstion to see if
+        // a device did acknowledge to the address.
+        Wire.beginTransmission(ADRRES_WRITE);
+        Wire.write(General_Purpose_Register);
+        Wire.write(0b0001);
+        error = Wire.endTransmission();
+
+        Wire.beginTransmission(ADRRES_WRITE);
+        Wire.write(Torch_Current_Register);
+        Wire.write(0x05);
+        error = Wire.endTransmission();
+
+        delay(2000);
+        Wire.beginTransmission(ADRRES_WRITE);
+        Wire.write(General_Purpose_Register);
+        Wire.write(0b0000);
+        error = Wire.endTransmission();
+
+        if (error == 0)
+        {
+          Serial.println("Success");
+        }
+        else
+        {
+          Serial.println("Error");
+        }
+        delay(2000); // wait 5 seconds for next scan
+        if (Serial.available() > 1)
+        {
+          break;
+        }
+        // Serial.println(i);
+      }
+      Serial.println(" Ready to recive new Value .....  ");
+    }
   }
-  else
-  {
-    Serial.println("Error");
-  }
-  delay(2000); // wait 5 seconds for next scan
 }
